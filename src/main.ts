@@ -16,7 +16,8 @@ Apify.main(async () => {
 
     if (!proxy.groups?.includes('RESIDENTIAL')) log.warning('It is recommended to use the RESIDENTIAL proxy group.');
 
-    await replenishCookies(Math.ceil(addresses.length * (resultsToScrape / 2) * 1.5));
+    const cookieRequestsToSend = addresses.length > 10 ? Math.ceil(addresses.length * resultsToScrape) : 15;
+    await replenishCookies(cookieRequestsToSend);
 
     const requests: RequestOptions[] = [];
 
