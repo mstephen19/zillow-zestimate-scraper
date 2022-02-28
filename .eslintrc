@@ -1,0 +1,6 @@
+{
+    "extends": "@apify/eslint-config-ts",
+    "parserOptions": {
+        "ecmaVersion": 2021
+    }
+}

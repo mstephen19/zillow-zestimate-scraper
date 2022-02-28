@@ -1,0 +1,32 @@
+{
+    "title": "Input schema for the hello_word actor.",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "addresses": {
+            "title": "Addresses",
+            "type": "array",
+            "description": "All addresses to scrape the \"Zestimate\" from",
+            "editor": "stringList"
+        },
+        "resultsToScrape": {
+            "title": "Maximum autocomplete results to scrape (Default: 1, Max: 12 - Zillow API limits it to 12)",
+            "type": "integer",
+            "description": "The number of results from the search of the address to scrape. Super specific addresses only return 1 result anyways.",
+            "minimum": 1,
+            "default": 1,
+            "maximum": 12,
+            "editor": "number"
+        },
+        "proxy": {
+            "title": "Proxy configuration (RESIDENTIAL RECOMMENDED)",
+            "type": "object",
+            "description": "Select proxies to be used by your crawler. Use RESIDENTIAL if you're getting blocked/running out of cookies quickly",
+            "editor": "proxy",
+            "prefill": {
+                "useApifyProxy": true
+            }
+        }
+    },
+    "required": ["addresses", "proxy"]
+}
