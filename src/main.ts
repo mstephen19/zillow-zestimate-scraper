@@ -18,7 +18,7 @@ Apify.main(async () => {
         log.warning('It is recommended to use RESIDENTIAL or SHADER proxy groups.');
     }
 
-    const cookieRequestsToSend = addresses.length > 10 ? Math.ceil(addresses.length + (resultsToScrape * addresses.length)) : 15;
+    const cookieRequestsToSend = addresses.length > 10 ? Math.ceil(addresses.length + (resultsToScrape * (addresses.length / 3))) : 15;
     await replenishCookies(cookieRequestsToSend);
 
     const requests: RequestOptions[] = [];
