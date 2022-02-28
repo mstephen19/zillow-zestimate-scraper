@@ -14,7 +14,7 @@ Apify.main(async () => {
     if (!addresses) throw new Error('Must provide at least one address!');
     if (!proxy?.useApifyProxy) throw new Error('Must use a proxy!');
 
-    if (!proxy.groups?.includes('RESIDENTIAL')) log.warning('It is recommended to use the RESIDENTIAL proxy group.');
+    if (!proxy.apifyProxyGroups?.includes('RESIDENTIAL')) log.warning('It is recommended to use the RESIDENTIAL proxy group.');
 
     const cookieRequestsToSend = addresses.length > 10 ? Math.ceil(addresses.length * resultsToScrape) : 15;
     await replenishCookies(cookieRequestsToSend);
