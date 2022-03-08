@@ -1,9 +1,9 @@
 import Apify, { RequestOptions } from 'apify';
+// @ts-ignore
+import dJSON from 'dirty-json';
 
 import { replenishCookies, getCookie, removeCookie } from './utils';
-
 import { Schema, Cookie } from './types';
-
 import { LABELS, FIND_ADDRESS_REQUEST, ESTIMATE_REQUEST } from './consts';
 
 const { log } = Apify.utils;
@@ -18,7 +18,7 @@ Apify.main(async () => {
         log.warning('It is recommended to use RESIDENTIAL or SHADER proxy groups.');
     }
 
-    const cookieRequestsToSend = addresses.length > 10 ? Math.ceil(((addresses.length + resultsToScrape) / 20) * 9) : 15;
+    const cookieRequestsToSend = addresses.length > 10 ? Math.ceil(((addresses.length + resultsToScrape) / 20) * 10) : 15;
     await replenishCookies(cookieRequestsToSend);
 
     const requests: RequestOptions[] = [];
@@ -35,6 +35,7 @@ Apify.main(async () => {
 
     const crawler = new Apify.CheerioCrawler({
         handlePageTimeoutSecs: 20,
+        requestTimeoutSecs: 45,
         proxyConfiguration,
         requestQueue,
         requestList,
@@ -42,7 +43,8 @@ Apify.main(async () => {
         sessionPoolOptions: {
             sessionOptions: {
                 sessionPool,
-                maxErrorScore: 5,
+                maxErrorScore: 1,
+                maxUsageCount: 1,
             },
         },
         persistCookiesPerSession: true,
@@ -50,7 +52,7 @@ Apify.main(async () => {
         ignoreSslErrors: true,
         maxConcurrency: 5,
         autoscaledPoolOptions: {
-            desiredConcurrency: 5,
+            desiredConcurrency: 2,
         },
         preNavigationHooks: [
             async ({ request }) => {
@@ -66,7 +68,7 @@ Apify.main(async () => {
                 }
             },
         ],
-        handlePageFunction: async ({ request, json, crawler: { requestQueue: crawlerRequestQueue } }) => {
+        handlePageFunction: async ({ request, json, body, crawler: { requestQueue: crawlerRequestQueue } }) => {
             switch (request.userData.label) {
                 default:
                     break;
@@ -78,6 +80,8 @@ Apify.main(async () => {
 
                         for (const propertyObj of arr) {
                             const { display, metaData } = propertyObj;
+
+                            if (!metaData?.zpid) return log.error('ZPID not found.');
 
                             const property = {
                                 address: display,
@@ -105,7 +109,14 @@ Apify.main(async () => {
                 case LABELS.GET_ESTIMATE: {
                     const { property } = request.userData;
                     try {
-                        const data = json?.data?.property;
+                        const bufferString = Buffer.from(body).toString();
+                        if (bufferString.includes('meta name="robots"')) throw new Error('Bot-detected by Zillow');
+
+                        const response = json || dJSON.parse(bufferString.concat('": null }}}'));
+                        if (!response) throw new Error('JSON not present in response.');
+
+                        const { property: data } = response?.data || {};
+                        if (!data) throw new Error('Property data not present in JSON.');
 
                         const final = {
                             ...property,
@@ -116,7 +127,7 @@ Apify.main(async () => {
                         log.info(`Pushing Zillow data (including Zestimate) for ${property.address}...`);
                         await Apify.pushData(final);
                     } catch (error) {
-                        log.error(`Failed when grabbing Zestimate for ${property?.address}`);
+                        throw log.error(`Failed when grabbing Zestimate for ${property?.address}: ${error}`);
                     }
                     break;
                 }
