@@ -18,7 +18,7 @@ Apify.main(async () => {
         log.warning('It is recommended to use RESIDENTIAL or SHADER proxy groups.');
     }
 
-    const cookieRequestsToSend = addresses.length > 10 ? Math.ceil(((addresses.length + resultsToScrape) / 20) * 8) : 15;
+    const cookieRequestsToSend = addresses.length > 10 ? Math.ceil(((addresses.length + resultsToScrape) / 20) * 9) : 15;
     await replenishCookies(cookieRequestsToSend);
 
     const requests: RequestOptions[] = [];
@@ -42,7 +42,7 @@ Apify.main(async () => {
         sessionPoolOptions: {
             sessionOptions: {
                 sessionPool,
-                maxErrorScore: 1,
+                maxErrorScore: 5,
             },
         },
         persistCookiesPerSession: true,
@@ -56,7 +56,7 @@ Apify.main(async () => {
             async ({ request }) => {
                 const { cookie } = request.headers;
                 if (!getCookie()) {
-                    log.warning('Ran out of cookies! Going to farm more...');
+                    log.warning('Ran out of cookies! Will replenish.');
                     await replenishCookies();
                 }
 
@@ -94,11 +94,11 @@ Apify.main(async () => {
                             await crawlerRequestQueue?.addRequest(
                                 ESTIMATE_REQUEST({ zpid: metaData?.zpid as string, cookie, userData: { property } })
                             );
-                            log.info(`Grabbed Zillow Property ID from ${property.address}.`);
+                            log.info(`Grabbed Zillow Property IDs from ${property.address}.`);
                         }
                     } catch (error) {
                         const { address } = request.userData;
-                        log.error(`Failed when grabbing Property ID for ${address}.`);
+                        log.error(`Failed when grabbing Property ID for ${address}: ${error}`);
                     }
                     break;
                 }
