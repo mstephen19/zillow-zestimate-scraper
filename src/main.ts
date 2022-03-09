@@ -50,9 +50,9 @@ Apify.main(async () => {
         persistCookiesPerSession: true,
         maxRequestRetries: 5,
         ignoreSslErrors: true,
-        maxConcurrency: 5,
+        maxConcurrency: 10,
         autoscaledPoolOptions: {
-            desiredConcurrency: 2,
+            desiredConcurrency: 3,
         },
         preNavigationHooks: [
             async ({ request }) => {
