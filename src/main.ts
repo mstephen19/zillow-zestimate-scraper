@@ -47,7 +47,7 @@ Apify.main(async () => {
                 maxUsageCount: 1,
             },
         },
-        persistCookiesPerSession: true,
+        persistCookiesPerSession: false,
         maxRequestRetries: 25,
         ignoreSslErrors: true,
         maxConcurrency: 15,
