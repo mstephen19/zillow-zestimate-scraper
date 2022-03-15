@@ -18,7 +18,7 @@ Apify.main(async () => {
         log.warning('It is recommended to use RESIDENTIAL or SHADER proxy groups.');
     }
 
-    const cookieRequestsToSend = addresses.length > 10 ? Math.ceil(((addresses.length + resultsToScrape) / 19) * 10) : 15;
+    const cookieRequestsToSend = addresses.length > 10 ? Math.ceil(((addresses.length + resultsToScrape) / 15) * 10) : 15;
     await replenishCookies(cookieRequestsToSend);
 
     const requests: RequestOptions[] = [];
@@ -39,14 +39,14 @@ Apify.main(async () => {
         proxyConfiguration,
         requestQueue,
         requestList,
-        useSessionPool: true,
-        sessionPoolOptions: {
-            sessionOptions: {
-                sessionPool,
-                maxErrorScore: 1,
-                maxUsageCount: 1,
-            },
-        },
+        // useSessionPool: true,
+        // sessionPoolOptions: {
+        //     sessionOptions: {
+        //         sessionPool,
+        //         maxErrorScore: 1,
+        //         maxUsageCount: 1,
+        //     },
+        // },
         persistCookiesPerSession: false,
         maxRequestRetries: 25,
         ignoreSslErrors: true,
