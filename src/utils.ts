@@ -54,7 +54,7 @@ export const getCookie = (): Cookie | undefined => {
         return obj;
     });
 
-    if (randomCookie.uses >= 5) {
+    if (randomCookie.uses >= 20) {
         removeCookie(randomCookie.cookie);
     }
 
