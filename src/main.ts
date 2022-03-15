@@ -18,7 +18,7 @@ Apify.main(async () => {
         log.warning('It is recommended to use RESIDENTIAL or SHADER proxy groups.');
     }
 
-    const cookieRequestsToSend = addresses.length > 10 ? Math.ceil(((addresses.length + resultsToScrape) / 20) * 10) : 15;
+    const cookieRequestsToSend = addresses.length > 10 ? Math.ceil(((addresses.length + resultsToScrape) / 19) * 10) : 15;
     await replenishCookies(cookieRequestsToSend);
 
     const requests: RequestOptions[] = [];
@@ -34,7 +34,7 @@ Apify.main(async () => {
     const sessionPool = await Apify.openSessionPool({});
 
     const crawler = new Apify.CheerioCrawler({
-        handlePageTimeoutSecs: 20,
+        handlePageTimeoutSecs: 25,
         requestTimeoutSecs: 45,
         proxyConfiguration,
         requestQueue,
@@ -48,11 +48,11 @@ Apify.main(async () => {
             },
         },
         persistCookiesPerSession: true,
-        maxRequestRetries: 5,
+        maxRequestRetries: 25,
         ignoreSslErrors: true,
-        maxConcurrency: 10,
+        maxConcurrency: 15,
         autoscaledPoolOptions: {
-            desiredConcurrency: 3,
+            desiredConcurrency: 4,
         },
         preNavigationHooks: [
             async ({ request }) => {
