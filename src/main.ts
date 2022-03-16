@@ -9,6 +9,8 @@ import { LABELS, FIND_ADDRESS_REQUEST, ESTIMATE_REQUEST } from './consts';
 
 const { log } = Apify.utils;
 
+let expected: number = 0;
+
 Apify.main(async () => {
     const { addresses, proxy, resultsToScrape = 1 } = (await Apify.getInput()) as Schema;
 
@@ -90,6 +92,8 @@ Apify.main(async () => {
                         if (arr.length === 0) log.warning(`Found 0 results for ${address}`);
                         if (arr.length > 0) log.info(`Found ${arr.length} addresses for input ${address}`);
 
+                        expected += arr.length;
+
                         for (const propertyObj of arr) {
                             const { display, metaData } = propertyObj;
 
@@ -108,7 +112,7 @@ Apify.main(async () => {
                             const cookie = getCookie() as string;
 
                             await crawlerRequestQueue?.addRequest(
-                                ESTIMATE_REQUEST({ zpid: metaData?.zpid as string, cookie, userData: { property } }),
+                                ESTIMATE_REQUEST({ zpid: metaData?.zpid as string, cookie, userData: { property } })
                             );
                             log.info(`Grabbed Zillow Property IDs from ${property.address}.`);
                         }
@@ -149,5 +153,5 @@ Apify.main(async () => {
 
     log.info('Starting the crawl.');
     await crawler.run();
-    log.info('Crawl finished.');
+    log.info(`Crawl finished. Expected results: ${expected}`);
 });
