@@ -17,7 +17,15 @@ export const FIND_ADDRESS_REQUEST = (address: string): RequestOptions => {
     };
 };
 
-export const ESTIMATE_REQUEST = <T>({ zpid, cookie, userData }: { zpid: string; cookie: string; userData: T }): RequestOptions => {
+export const ESTIMATE_REQUEST = <T extends Record<string, unknown>>({
+    zpid,
+    cookie,
+    userData,
+}: {
+    zpid: string;
+    cookie: string;
+    userData: T;
+}): RequestOptions => {
     return {
         url: `https://www.zillow.com/graphql/`,
         headers: {

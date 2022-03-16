@@ -9,8 +9,8 @@ let cookies: CookieObject[] = [];
 const newCookies = async (num?: number): Promise<Cookie[]> => {
     const { defaultDatasetId } = await Apify.call(
         'mstephen190/zillow-cookie-farmer',
-        { requestsNum: num || 15 },
-        { memoryMbytes: 2048, timeoutSecs: 0, fetchOutput: true }
+        { requestsNum: num || 20 },
+        { memoryMbytes: 2048, timeoutSecs: 0, fetchOutput: true },
     );
 
     const dataset = await Apify.openDataset(defaultDatasetId, { forceCloud: true });
